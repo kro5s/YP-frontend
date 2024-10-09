@@ -1,0 +1,63 @@
+.header {
+  height: 100vh;
+  min-height: 600px;
+  max-height: 756px;
+  /* выше установили ограничения для секции */
+
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.header__title {
+  z-index: 2;
+  width: 730px;
+
+  margin: 0 0 0 64px;
+
+  line-height: 96px;
+  font-size: 102px;
+  font-weight: 600;
+}
+
+.header__subtitle {
+  position: absolute;
+  z-index: 2;
+
+  width: 388px;
+
+  left: 64px;
+  bottom: 30px;
+
+  line-height: 25px;
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.header__link {
+  text-decoration: none;
+  color: var(--blue-accent);
+}
+
+.header__main-illustration {
+  z-index: 1;
+  position: absolute;
+
+  width: 765px;
+  height: 608px;
+
+  right: 0;
+  bottom: 0;
+}
+
+.header__square-pic {
+  position: absolute;
+
+  height: 568px;
+  width: 568px;
+
+  top: 64px;
+  right: 0;
+
+  background-color: var(--blue-accent);
+}
