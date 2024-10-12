@@ -8,9 +8,13 @@
   padding: 0;
 }
 
+ul {
+  list-style: none;
+}
+
 :root {
   --gray-background: #1f1f1f;
-  --light-gary-background: #f2f2f2;
+  --light-gray-background: #f2f2f2;
   --blue-accent: #2f80ed;
   --black-text: #000;
 }
@@ -93,7 +97,7 @@
 
   padding-top: 100px;
 
-  background: var(--light-gary-background) url("../images/feynman.png") no-repeat left bottom;
+  background: var(--light-gray-background) url("../images/feynman.png") no-repeat left bottom;
   background-size: 867px 637px;
 }
 
