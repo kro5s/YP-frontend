@@ -1,9 +1,15 @@
 import { initialCards } from "./cards";
 import "../pages/index.css";
 import avatarUrl from '../images/avatar.jpg';
+<<<<<<<< HEAD:src/components/index.js
 import {enableValidation} from "./validate";
 import { openModal, closeModal } from "./modal";
 import {createCard} from "./card";
+========
+import {enableValidation} from "../components/validate";
+import { openModal, closeModal } from "../components/modal";
+import {createCard} from "../components/card";
+>>>>>>>> 4301b1fc65bef7723aae1baf82468a1a867cb7a6:src/scripts/index.js
 
 const profileImage = document.querySelector('.profile__image');
 profileImage.style.backgroundImage = `url(${avatarUrl})`;
