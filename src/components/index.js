@@ -1,99 +1,77 @@
-import { initialCards } from "./cards";
 import "../pages/index.css";
-import avatarUrl from '../images/avatar.jpg';
 import {enableValidation} from "./validate";
-import { openModal, closeModal } from "./modal";
+import {handleProfilePopupOpen, handleProfilePopupSubmit} from "./profilePopup";
+import {handleCardPopupOpen, handleCardPopupSubmit} from "./cardPopup";
+import {handleImagePopupOpen} from "./imagePopup";
+import {enablePopups} from "./modal";
+import {getInitialCards, getUser} from "./api";
+import {handleAvatarPopupOpen, handleAvatarPopupSubmit} from "./avatarPopup";
 import {createCard} from "./card";
 
-const profileImage = document.querySelector('.profile__image');
-profileImage.style.backgroundImage = `url(${avatarUrl})`;
+async function initializeUser() {
+  const profileImage = document.querySelector('.profile__image');
+  const profileTitle = document.querySelector(".profile__title");
+  const profileDescription = document.querySelector(".profile__description");
 
-const profilePopup = document.querySelector(".popup_type_edit");
-const cardPopup = document.querySelector(".popup_type_new-card");
-const imagePopup = document.querySelector(".popup_type_image");
+  try {
+    const res = await getUser();
 
-[profilePopup, cardPopup, imagePopup].forEach(popup => popup.classList.add("popup_is-animated"));
+    const {name, about, avatar, _id} = await res.json();
 
-const cards = initialCards.map(createCard);
-const places = document.querySelector(".places__list");
-places.append(...cards);
+    profileImage.style.backgroundImage = `url(${avatar})`;
+    profileTitle.textContent = name;
+    profileDescription.textContent = about;
 
-const imagePopupImage = imagePopup.querySelector(".popup__image");
-const imagePopupCaption = imagePopup.querySelector(".popup__caption");
-const imagePopupCloseButton = imagePopup.querySelector(".popup__close");
-
-const cardElements = document.querySelectorAll(".card");
-
-cardElements.forEach(card => {
-  const cardImage = card.querySelector(".card__image");
-  const cardTitle = card.querySelector(".card__title");
-
-  cardImage.addEventListener("click", () => {
-    imagePopupImage.src = cardImage.src;
-    imagePopupImage.alt = cardTitle.textContent;
-    imagePopupCaption.textContent = cardTitle.textContent;
-    openModal(imagePopup);
-  })
-})
-
-imagePopupCloseButton.addEventListener("click", () => closeModal(imagePopup));
-
-const profileForm = profilePopup.querySelector(".popup__form");
-
-const openEditProfileButton = document.querySelector(".profile__edit-button");
-const closeEditProfileButton = profilePopup.querySelector(".popup__close");
-
-const profileTitle = document.querySelector(".profile__title");
-const profileDescription = document.querySelector(".profile__description")
-
-const profileTitleInput = profilePopup.querySelector(".popup__input_type_name");
-const profileDescriptionInput = profilePopup.querySelector(".popup__input_type_description");
-
-function handleProfileEdit() {
-  profileTitleInput.value = profileTitle.textContent;
-  profileDescriptionInput.value = profileDescription.textContent;
-  openModal(profilePopup);
+    return _id;
+  } catch (e) {
+    console.log(e);
+  }
 }
 
-function handleProfileFormSubmit(e) {
-  e.preventDefault();
+async function initializeCards(userId) {
+  const places = document.querySelector(".places__list");
 
-  profileTitle.textContent = profileTitleInput.value;
-  profileDescription.textContent = profileDescriptionInput.value;
+  try {
+    const res = await getInitialCards();
+    const data = await res.json();
 
-  closeModal(profilePopup);
+    const cards = data.map(item => createCard(item, userId));
+    places.append(...cards);
+  } catch (e) {
+    console.log(e);
+  }
 }
 
-openEditProfileButton.addEventListener("click", handleProfileEdit);
-closeEditProfileButton.addEventListener("click", () => closeModal(profilePopup));
-profileForm.addEventListener("submit", handleProfileFormSubmit)
+const userId = await initializeUser();
+await initializeCards(userId);
 
-const cardForm = cardPopup.querySelector(".popup__form");
-
-const addCardButton = document.querySelector(".profile__add-button");
-const closeCardButton = cardPopup.querySelector(".popup__close");
-
-const cardNameInput = cardPopup.querySelector(".popup__input_type_card-name");
-const cardLinkInput = cardPopup.querySelector(".popup__input_type_url");
-
-function handleAddCard() {
-  cardNameInput.value = "";
-  cardLinkInput.value = "";
-  openModal(cardPopup);
+const popups = {
+  profilePopup: {
+    element: document.querySelector(".popup_type_edit"),
+    openers: [document.querySelector(".profile__edit-button")],
+    openerHandler: handleProfilePopupOpen,
+    submitHandler: handleProfilePopupSubmit
+  },
+  cardPopup: {
+    element: document.querySelector(".popup_type_new-card"),
+    openers: [document.querySelector(".profile__add-button")],
+    openerHandler: handleCardPopupOpen,
+    submitHandler: handleCardPopupSubmit
+  },
+  imagePopup: {
+    element: document.querySelector(".popup_type_image"),
+    openers: Array.from(document.querySelectorAll(".card__image")),
+    openerHandler: handleImagePopupOpen
+  },
+  avatarPopup: {
+    element: document.querySelector(".popup_type_avatar"),
+    openers: [document.querySelector(".profile__image")],
+    openerHandler: handleAvatarPopupOpen,
+    submitHandler: handleAvatarPopupSubmit
+  }
 }
 
-function handleCardFormSubmit(e) {
-  e.preventDefault();
-
-  const newCard = createCard({name: cardNameInput.value, link: cardLinkInput.value});
-  places.prepend(newCard);
-
-  closeModal(cardPopup);
-}
-
-addCardButton.addEventListener("click", handleAddCard);
-closeCardButton.addEventListener("click", () => closeModal(cardPopup));
-cardForm.addEventListener("submit", handleCardFormSubmit);
+enablePopups(popups);
 
 const validationSettings = {
   formSelector: '.popup__form',
