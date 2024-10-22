@@ -2,6 +2,8 @@ const path = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const {CleanWebpackPlugin} = require("clean-webpack-plugin");
+const { DefinePlugin } = require("webpack");
+const dotenv = require("dotenv");
 
 module.exports = {
   entry: {
@@ -48,6 +50,9 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({template: "./src/index.html"}),
     new CleanWebpackPlugin(),
-    new MiniCssExtractPlugin()
+    new MiniCssExtractPlugin(),
+    new DefinePlugin({
+      'process.env': JSON.stringify(dotenv.config({ path: "./.env.local" }).parsed)
+    })
   ]
 }
